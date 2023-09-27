@@ -1,27 +1,94 @@
-const  fs = require('node:fs/promises');
-const path = require('node:path');
+const  express = require('express');
+const app = express();
+const  fsService = require('./fsService')
 
-const func = async () => {
-    const filesArr = ['file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', 'file5.txt'];
-    const folderArr = ['folder1', 'folder2', 'folder3', 'folder4', 'folder5'];
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
-    const basePath = path.join(process.cwd(), 'mainFolder');
+app.listen(5000, ()=>{
+    console.log("Server has been started");
+})
 
-    /*await Promise.all( folderArr.map(async (name)=>{
-        await fs.mkdir(path.join(basePath, name), {recursive:true})
-    }))
+app.get('/users', async (req, res)=> {
+   const  users = await fsService.reader();
+   res.json(users);
+})
 
-    await Promise.all( filesArr.map(async (name)=>{
-        await fs.writeFile(path.join(basePath, name), 'hi there')
-    }))*/
+app.get('/users/:id', async (req, res)=> {
+    const  users = await fsService.reader();
+    const {id} = req.params;
+    const user = users.filter((user)=> user.id === +id)
+    res.json(user);
+})
 
-    const arr = await fs.readdir(basePath);
-    for(const item of arr){
-        const stat = await fs.stat(path.join(basePath, item))
-        if (stat.isFile()){
-            console.log(`file: ${await fs.readFile(item)}`)
-        } else console.log(`folder: ${await fs.readFile(item)}`)
+app.post('/users', async (req, res) =>{
+    try {
+        const {name, email} = req.body;
+
+        if (!name || name.length < 2){
+            throw new Error('Wrong name')
+
+        }
+
+        if (!email || !email.includes('@') ){
+            throw new Error('Wrong name')
+
+        }
+
+        const users = await fsService.reader();
+        const lastId = users[users.length-1].id;
+        const newUser = {name, email, id: lastId + 1}
+        users.push(newUser);
+        await fsService.writer(users);
+
+        res.status(201).json(newUser);
     }
-}
+   catch (e) {
+       return res.status(400).json(e.message)
+   }
 
-func().then()
+})
+
+app.put('/users/:id', async (req, res) =>{
+    try {
+        const {name, email} = req.body;
+
+        if (!name || name.length < 2){
+            throw new Error('Wrong name')
+
+        }
+
+        if (!email || !email.includes('@') ){
+            throw new Error('Wrong name')
+
+        }
+
+        const users = await fsService.reader();
+        const {id} = req.params;
+        const updatedUser = {id: +id, name, email}
+        users[+id-1] = updatedUser
+        console.log(users)
+        await fsService.writer(users);
+
+        res.status(201).json(updatedUser);
+    }
+    catch (e) {
+        return res.status(400).json(e.message)
+    }
+
+})
+
+app.delete('/users/:id', async (req, res) =>{
+    try {
+        const users = await fsService.reader();
+        const {id} = req.params;
+        const deleteId = Number(id) - 1
+        users.splice(deleteId, 1);
+        console.log(users)
+        await fsService.writer(users);
+        res.send("DELETE Request DONE")
+    }
+    catch (e) {
+        return res.status(400).json(e.message)
+    }
+})
