@@ -21,15 +21,6 @@ class UserController {
             next(e);
         }
     }
-    async create(req, res, next) {
-        try {
-            const createdUser = await user_service_1.userService.create(req.body);
-            res.status(201).json(createdUser);
-        }
-        catch (e) {
-            next(e);
-        }
-    }
     async updateById(req, res, next) {
         try {
             const updatedUser = await user_service_1.userService.updateById(req.params.id, req.body);

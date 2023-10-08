@@ -9,8 +9,11 @@ class UserRepository {
     async findById(id) {
         return User_model_1.User.findById(id);
     }
-    create(userBody) {
-        return User_model_1.User.create(userBody);
+    async getOneByParams(params) {
+        return User_model_1.User.findOne(params);
+    }
+    register(dto) {
+        return User_model_1.User.create({ ...dto });
     }
     updateById(id, userBody) {
         return User_model_1.User.findByIdAndUpdate(id, userBody, {

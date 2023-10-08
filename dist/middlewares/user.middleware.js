@@ -18,5 +18,18 @@ class UserMiddleware {
             next(e);
         }
     }
+    async isEmailUnique(req, res, next) {
+        try {
+            const { email } = req.body;
+            const user = await user_repository_1.userRepository.getOneByParams({ email });
+            if (user) {
+                throw new api_errors_1.ApiError("Email already exist", 409);
+            }
+            next();
+        }
+        catch (e) {
+            next(e);
+        }
+    }
 }
 exports.userMiddleware = new UserMiddleware();

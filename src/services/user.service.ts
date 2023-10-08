@@ -7,11 +7,6 @@ class UserService {
     return users;
   }
 
-  public async create(userBody: IUser) {
-    const user = await userRepository.create(userBody);
-    return user;
-  }
-
   public async updateById(id: string, userBody: IUser) {
     const user = await userRepository.updateById(id, userBody);
     return user;
