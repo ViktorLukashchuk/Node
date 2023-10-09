@@ -12,6 +12,9 @@ class TokenRepository {
     async deleteOne(params) {
         await Token_model_1.Token.deleteOne(params);
     }
+    async deleteManyByUserId(userId) {
+        await Token_model_1.Token.deleteMany({ _userId: userId });
+    }
 }
 exports.TokenRepository = TokenRepository;
 exports.tokenRepository = new TokenRepository();

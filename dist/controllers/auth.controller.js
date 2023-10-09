@@ -32,5 +32,45 @@ class AuthController {
             next(e);
         }
     }
+    async logout(req, res, next) {
+        try {
+            const accessToken = req.res.locals.accessToken;
+            await auth_service_1.authService.logout(accessToken);
+            return res.sendStatus(204);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
+    async logoutAll(req, res, next) {
+        try {
+            const tokenPayload = req.res.locals.tokenPayload;
+            await auth_service_1.authService.logoutAll(tokenPayload.userId);
+            return res.sendStatus(204);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
+    async activate(req, res, next) {
+        try {
+            const actionToken = req.query.actionToken;
+            await auth_service_1.authService.activate(actionToken);
+            return res.sendStatus(204);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
+    async sendActivationToken(req, res, next) {
+        try {
+            const tokenPayload = req.res.locals.tokenPayload;
+            await auth_service_1.authService.sendActivationToken(tokenPayload);
+            return res.sendStatus(204);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
 }
 exports.authController = new AuthController();

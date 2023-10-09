@@ -11,4 +11,8 @@ const router = (0, express_1.Router)();
 router.post("/register", common_middleware_1.commonMiddleware.isBodyValid(user_validator_1.UserValidator.register), user_middleware_1.userMiddleware.isEmailUnique, auth_controller_1.authController.register);
 router.post("/login", common_middleware_1.commonMiddleware.isBodyValid(user_validator_1.UserValidator.login), auth_controller_1.authController.login);
 router.post("/refresh", auth_middleware_1.authMiddleware.checkRefreshToken, auth_controller_1.authController.refresh);
+router.post("/logout", auth_middleware_1.authMiddleware.checkAccessToken, auth_controller_1.authController.logout);
+router.post("/logout-all", auth_middleware_1.authMiddleware.checkAccessToken, auth_controller_1.authController.logoutAll);
+router.post("/activate", auth_middleware_1.authMiddleware.checkAccessToken, auth_controller_1.authController.sendActivationToken);
+router.put("/activate", auth_controller_1.authController.activate);
 exports.authRouter = router;

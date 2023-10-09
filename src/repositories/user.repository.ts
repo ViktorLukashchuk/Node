@@ -18,6 +18,14 @@ class UserRepository {
   public register(dto: IUserCredentials): Promise<IUser> {
     return User.create({ ...dto });
   }
+  public async setStatus(userId: string, status: any): Promise<void> {
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: { status },
+      },
+    );
+  }
 
   public updateById(id: string, userBody: IUser) {
     return User.findByIdAndUpdate(id, userBody, {

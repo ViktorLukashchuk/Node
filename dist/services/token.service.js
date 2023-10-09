@@ -57,5 +57,18 @@ class TokenService {
             throw new api_errors_1.ApiError("Token not valid!", 401);
         }
     }
+    generateActionToken(payload) {
+        return jwt.sign(payload, config_1.configs.JWT_ACTION_SECRET, {
+            expiresIn: "1d",
+        });
+    }
+    checkActionToken(token) {
+        try {
+            return jwt.verify(token, config_1.configs.JWT_ACTION_SECRET);
+        }
+        catch (e) {
+            throw new api_errors_1.ApiError("Token not valid!", 401);
+        }
+    }
 }
 exports.tokenService = new TokenService();

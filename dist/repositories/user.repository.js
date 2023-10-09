@@ -15,6 +15,11 @@ class UserRepository {
     register(dto) {
         return User_model_1.User.create({ ...dto });
     }
+    async setStatus(userId, status) {
+        await User_model_1.User.updateOne({ _id: userId }, {
+            $set: { status },
+        });
+    }
     updateById(id, userBody) {
         return User_model_1.User.findByIdAndUpdate(id, userBody, {
             returnDocument: "after",
