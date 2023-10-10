@@ -105,6 +105,22 @@ class AuthController {
       next(e);
     }
   }
+
+  public async forgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<void>> {
+    try {
+      const tokenPayload = req.res.locals.tokenPayload as ITokenPayload;
+
+      await authService.sendActivationToken(tokenPayload);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const authController = new AuthController();

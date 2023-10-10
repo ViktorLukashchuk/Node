@@ -33,3 +33,6 @@ UserValidator.login = joi_1.default.object({
     email: _a.email.required(),
     password: _a.password.required(),
 });
+UserValidator.forgotPassword = joi_1.default.object({
+    email: _a.email.required(),
+});

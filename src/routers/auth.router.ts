@@ -36,4 +36,10 @@ router.post(
   authController.sendActivationToken,
 );
 router.put("/activate", authController.activate);
+
+router.post(
+  "/forgot",
+  commonMiddleware.isBodyValid(UserValidator.forgotPassword),
+  authController.forgotPassword,
+);
 export const authRouter = router;

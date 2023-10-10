@@ -15,4 +15,5 @@ router.post("/logout", auth_middleware_1.authMiddleware.checkAccessToken, auth_c
 router.post("/logout-all", auth_middleware_1.authMiddleware.checkAccessToken, auth_controller_1.authController.logoutAll);
 router.post("/activate", auth_middleware_1.authMiddleware.checkAccessToken, auth_controller_1.authController.sendActivationToken);
 router.put("/activate", auth_controller_1.authController.activate);
+router.post("/forgot", common_middleware_1.commonMiddleware.isBodyValid(user_validator_1.UserValidator.forgotPassword), auth_controller_1.authController.forgotPassword);
 exports.authRouter = router;
