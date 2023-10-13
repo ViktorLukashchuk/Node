@@ -23,7 +23,7 @@ class AuthService {
             const actionToken = token_service_1.tokenService.generateActionToken({
                 userId: user._id,
                 name: user.name,
-            });
+            }, EEmailAction_1.EActionTokenType.activate);
             await action_token_repository_1.actionTokenRepository.create({
                 token: actionToken,
                 type: EEmailAction_1.EActionTokenType.activate,
@@ -97,7 +97,7 @@ class AuthService {
     }
     async activate(actionToken) {
         try {
-            const payload = token_service_1.tokenService.checkActionToken(actionToken);
+            const payload = token_service_1.tokenService.checkActionToken(actionToken, EEmailAction_1.EActionTokenType.activate);
             const entity = await action_token_repository_1.actionTokenRepository.findOne({
                 token: actionToken,
             });
@@ -120,7 +120,7 @@ class AuthService {
             const actionToken = token_service_1.tokenService.generateActionToken({
                 userId: user._id,
                 name: user.name,
-            });
+            }, EEmailAction_1.EActionTokenType.activate);
             await action_token_repository_1.actionTokenRepository.create({
                 token: actionToken,
                 type: EEmailAction_1.EActionTokenType.activate,
@@ -130,6 +130,64 @@ class AuthService {
                 name: user.name,
                 actionToken,
             });
+        }
+        catch (e) {
+            throw new api_errors_1.ApiError(e.message, e.status);
+        }
+    }
+    async forgotPassword(user) {
+        try {
+            const actionToken = token_service_1.tokenService.generateActionToken({
+                userId: user._id,
+            }, EEmailAction_1.EActionTokenType.forgotPassword);
+            await Promise.all([
+                action_token_repository_1.actionTokenRepository.create({
+                    token: actionToken,
+                    type: EEmailAction_1.EActionTokenType.forgotPassword,
+                    _userId: user._id,
+                }),
+                email_service_1.emailService.sendEmail(user.email, email_action_enum_1.EEmailAction.FORGOT_PASSWORD, {
+                    actionToken,
+                }),
+            ]);
+        }
+        catch (e) {
+            throw new api_errors_1.ApiError(e.message, e.status);
+        }
+    }
+    async setForgotPassword(actionToken, newPassword) {
+        try {
+            const payload = token_service_1.tokenService.checkActionToken(actionToken, EEmailAction_1.EActionTokenType.forgotPassword);
+            const entity = await action_token_repository_1.actionTokenRepository.findOne({
+                token: actionToken,
+            });
+            if (!entity) {
+                throw new api_errors_1.ApiError("Not valid token", 400);
+            }
+            const newHashedPassword = await password_service_1.passwordService.hash(newPassword);
+            await Promise.all([
+                user_repository_1.userRepository.updateOneById(payload.userId, {
+                    password: newHashedPassword,
+                }),
+                action_token_repository_1.actionTokenRepository.deleteOne({ token: actionToken }),
+            ]);
+        }
+        catch (e) {
+            throw new api_errors_1.ApiError(e.message, e.status);
+        }
+    }
+    async setNewPassword(body, userId) {
+        try {
+            const user = await user_repository_1.userRepository.findById(userId);
+            const isMatch = await password_service_1.passwordService.compare(body.password, user.password);
+            if (!isMatch) {
+                throw new api_errors_1.ApiError("Wrong pass", 400);
+            }
+            const password = await password_service_1.passwordService.hash(body.newPassword);
+            await Promise.all([
+                user_repository_1.userRepository.updateOneById(userId, { password }),
+                this.logoutAll(userId),
+            ]);
         }
         catch (e) {
             throw new api_errors_1.ApiError(e.message, e.status);

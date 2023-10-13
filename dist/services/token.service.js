@@ -26,6 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokenService = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const config_1 = require("../configs/config");
+const EEmailAction_1 = require("../enums/EEmailAction");
 const api_errors_1 = require("../errors/api.errors");
 class TokenService {
     generateTokenPair(payload) {
@@ -57,14 +58,32 @@ class TokenService {
             throw new api_errors_1.ApiError("Token not valid!", 401);
         }
     }
-    generateActionToken(payload) {
-        return jwt.sign(payload, config_1.configs.JWT_ACTION_SECRET, {
+    generateActionToken(payload, tokenType) {
+        let secret;
+        switch (tokenType) {
+            case EEmailAction_1.EActionTokenType.activate:
+                secret = config_1.configs.JWT_ACTiVATE_SECRET;
+                break;
+            case EEmailAction_1.EActionTokenType.forgotPassword:
+                secret = config_1.configs.JWT_FORGOT_SECRET;
+                break;
+        }
+        return jwt.sign(payload, secret, {
             expiresIn: "1d",
         });
     }
-    checkActionToken(token) {
+    checkActionToken(token, tokenType) {
         try {
-            return jwt.verify(token, config_1.configs.JWT_ACTION_SECRET);
+            let secret;
+            switch (tokenType) {
+                case EEmailAction_1.EActionTokenType.forgotPassword:
+                    secret = config_1.configs.JWT_FORGOT_SECRET;
+                    break;
+                case EEmailAction_1.EActionTokenType.activate:
+                    secret = config_1.configs.JWT_ACTiVATE_SECRET;
+                    break;
+            }
+            return jwt.verify(token, secret);
         }
         catch (e) {
             throw new api_errors_1.ApiError("Token not valid!", 401);

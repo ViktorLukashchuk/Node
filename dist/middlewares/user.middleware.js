@@ -31,5 +31,22 @@ class UserMiddleware {
             next(e);
         }
     }
+    isUserExist(field) {
+        return async (req, res, next) => {
+            try {
+                const user = await user_repository_1.userRepository.getOneByParams({
+                    [field]: req.body[field],
+                });
+                if (!user) {
+                    throw new api_errors_1.ApiError("User NOT found", 404);
+                }
+                req.res.locals = user;
+                next();
+            }
+            catch (e) {
+                next(e);
+            }
+        };
+    }
 }
 exports.userMiddleware = new UserMiddleware();

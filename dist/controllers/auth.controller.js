@@ -74,9 +74,29 @@ class AuthController {
     }
     async forgotPassword(req, res, next) {
         try {
+            const user = req.res.locals;
+            await auth_service_1.authService.forgotPassword(user);
+            res.sendStatus(200);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
+    async setForgotPassword(req, res, next) {
+        try {
+            await auth_service_1.authService.setForgotPassword(req.params.token, req.body.newPassword);
+            res.sendStatus(204);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
+    async setNewPassword(req, res, next) {
+        try {
+            const body = req.body;
             const tokenPayload = req.res.locals.tokenPayload;
-            await auth_service_1.authService.sendActivationToken(tokenPayload);
-            return res.sendStatus(204);
+            await auth_service_1.authService.setNewPassword(body, tokenPayload.userId);
+            res.sendStatus(204);
         }
         catch (e) {
             next(e);

@@ -32,6 +32,27 @@ class UserMiddleware {
       next(e);
     }
   }
+  public isUserExist<T>(field: keyof T) {
+    return async (
+      req: Request,
+      res: Response,
+      next: NextFunction,
+    ): Promise<void> => {
+      try {
+        const user = await userRepository.getOneByParams({
+          [field]: req.body[field],
+        });
+
+        if (!user) {
+          throw new ApiError("User NOT found", 404);
+        }
+        req.res.locals = user;
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
+  }
 }
 
 export const userMiddleware = new UserMiddleware();
