@@ -43,6 +43,37 @@ class UserRepository {
   public delete(id: string) {
     return User.deleteOne({ _id: id }).lean();
   }
+
+  public findWithoutActivityAfterDate(date: string): Promise<IUser[]> {
+    return User.aggregate([
+      {
+        $lookup: {
+          from: "tokens",
+          localField: "_id",
+          foreignField: "_userId",
+          as: "tokens",
+        },
+      },
+      {
+        $match: {
+          tokens: {
+            $not: {
+              $elemMatch: {
+                createdAt: { $gte: date },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          email: 1,
+        },
+      },
+    ]);
+  }
 }
 
 export const userRepository = new UserRepository();
