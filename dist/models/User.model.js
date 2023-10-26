@@ -34,6 +34,9 @@ const UserSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    avatar: {
+        type: String,
+    },
 }, {
     timestamps: true,
     versionKey: false,

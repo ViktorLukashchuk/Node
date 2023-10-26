@@ -12,8 +12,8 @@ class CarRepository {
     async findById(id) {
         return await Car_model_1.Car.findById(id);
     }
-    async createCar(dto) {
-        return await Car_model_1.Car.create(dto);
+    async createCar(dto, userId) {
+        return await Car_model_1.Car.create({ ...dto, _userId: userId });
     }
     async updateCar(carId, dto) {
         return await Car_model_1.Car.findByIdAndUpdate(carId, dto, {

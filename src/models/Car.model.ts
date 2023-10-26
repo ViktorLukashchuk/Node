@@ -1,6 +1,7 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 
 import { EProducer } from "../enums/producer.enum";
+import { User } from "./User.model";
 
 const carSchema = new Schema(
   {
@@ -15,6 +16,11 @@ const carSchema = new Schema(
       type: String,
       enum: EProducer,
       required: true,
+    },
+    _userId: {
+      type: Types.ObjectId,
+      required: true,
+      ref: User,
     },
   },
   {
