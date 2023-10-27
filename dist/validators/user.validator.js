@@ -16,6 +16,7 @@ UserValidator.firstName = joi_1.default.string().min(2).max(50).trim();
 UserValidator.age = joi_1.default.number().min(18).max(150);
 UserValidator.genders = joi_1.default.valid(...Object.values(gender_enum_1.EGenders)).required();
 UserValidator.email = joi_1.default.string().regex(regexp_constants_1.regexConstant.EMAIL).trim().required();
+UserValidator.phone = joi_1.default.string().regex(regexp_constants_1.regexConstant.PHONE).trim();
 UserValidator.password = joi_1.default.string().trim();
 UserValidator.update = joi_1.default.object({
     name: _a.firstName,
@@ -27,6 +28,7 @@ UserValidator.register = joi_1.default.object({
     age: _a.age.required(),
     genders: _a.genders.required(),
     email: _a.email.required(),
+    phone: _a.phone.required(),
     password: _a.password.required(),
 });
 UserValidator.login = joi_1.default.object({

@@ -11,6 +11,7 @@ const token_repository_1 = require("../repositories/token.repository");
 const user_repository_1 = require("../repositories/user.repository");
 const email_service_1 = require("./email.service");
 const password_service_1 = require("./password.service");
+const prepare_sms_service_1 = require("./prepare-sms.service");
 const token_service_1 = require("./token.service");
 class AuthService {
     async register(dto) {
@@ -33,6 +34,7 @@ class AuthService {
                 name: dto.name,
                 actionToken,
             });
+            await prepare_sms_service_1.prepareSmsService.register(dto.phone, { name: dto.name });
             return user;
         }
         catch (e) {
